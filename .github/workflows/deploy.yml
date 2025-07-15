@@ -1,0 +1,29 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: チェックアウト
+      uses: actions/checkout@v4
+      
+    - name: さくらのAppRunへデプロイ
+      id: deploy
+      uses: meso/sakura-apprun-action@v1
+      with:
+        sakura-api-key: ${{ secrets.SAKURA_API_KEY }}
+        sakura-api-secret: ${{ secrets.SAKURA_API_SECRET }}
+        container-registry: meso.sakuracr.jp
+        container-registry-user: ${{ secrets.REGISTRY_USER }}
+        container-registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+        port: '3000'
+        
+    - name: デプロイURLを表示
+      run: |
+        echo "デプロイ先: ${{ steps.deploy.outputs.public-url }}"
